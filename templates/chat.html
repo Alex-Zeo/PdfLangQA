@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Interface</title>
+</head>
+<body>
+    <div id="chatbox">
+        <!-- This is where the chat messages will go -->
+    </div>
+
+    <form id="chat-form" action="/ask" method="post">
+        <input type="text" id="question" name="question" placeholder="Type your question here..." required>
+        <input type="submit" value="Ask">
+    </form>
+
+    <script>
+        // This script handles the form submission
+        document.getElementById('chat-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the form from being submitted normally
+
+            var question = document.getElementById('question').value;
+            var chatbox = document.getElementById('chatbox');
+
+            // Add the user's question to the chatbox
+            chatbox.innerHTML += '<p>You: ' + question + '</p>';
+
+            // Send the question to the server
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'question=' + encodeURIComponent(question)
+            })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(answer) {
+                // Add the server's answer to the chatbox
+                chatbox.innerHTML += '<p>Bot: ' + answer + '</p>';
+            });
+
+            // Clear the input field
+            document.getElementById('question').value = '';
+        });
+    </script>
+</body>
+</html>
